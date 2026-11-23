@@ -1,5 +1,5 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { ArrowDown, ArrowLeft, ArrowRight, Check, Heart, Instagram, Menu, MessageCircle, Phone, Quote, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
@@ -15,7 +15,45 @@ export function SiteHeader() {
   const [open, setOpen] = useState(false);
   const pathname = useRouterState({ select: (state) => state.location.pathname });
   useEffect(() => { setOpen(false); }, [pathname]);
-  return <header className="site-header"><div className="header-inner"><Brand /><nav className="desktop-nav" aria-label="Main navigation">{nav.map(item => <Link key={item.to} to={item.to} className={`nav-link ${pathname === item.to ? "active" : ""}`}>{item.label}</Link>)}</nav><BookingButton className="header-book">Book Now <ArrowRight /></BookingButton><Button className="menu-toggle" variant="ghost" size="icon" aria-label={open ? "Close navigation" : "Open navigation"} onClick={() => setOpen(!open)}>{open ? <X /> : <Menu />}</Button></div>{open && <nav className="mobile-menu" aria-label="Mobile navigation">{nav.map(item => <Link key={item.to} to={item.to} className="nav-link">{item.label}</Link>)}<BookingButton>Book Now</BookingButton></nav>}</header>;
+  useEffect(() => {
+    document.body.classList.toggle("nav-open", open);
+    return () => document.body.classList.remove("nav-open");
+  }, [open]);
+  return (
+    <header className="site-header">
+      <div className="header-inner">
+        <Brand />
+        <nav className="desktop-nav" aria-label="Main navigation">
+          {nav.map((item) => (
+            <Link key={item.to} to={item.to} className={`nav-link ${pathname === item.to ? "active" : ""}`}>
+              {item.label}
+            </Link>
+          ))}
+        </nav>
+        <BookingButton className="header-book">Book Now <ArrowRight /></BookingButton>
+        <Button
+          className="menu-toggle"
+          variant="ghost"
+          size="icon"
+          aria-expanded={open}
+          aria-label={open ? "Close navigation" : "Open navigation"}
+          onClick={() => setOpen(!open)}
+        >
+          {open ? <X /> : <Menu />}
+        </Button>
+      </div>
+      {open && (
+        <nav className="mobile-menu" aria-label="Mobile navigation">
+          {nav.map((item) => (
+            <Link key={item.to} to={item.to} className={`nav-link ${pathname === item.to ? "active" : ""}`}>
+              {item.label}
+            </Link>
+          ))}
+          <BookingButton>Book Now</BookingButton>
+        </nav>
+      )}
+    </header>
+  );
 }
 export function SiteFooter() { return <><section className="cta-band"><span className="eyebrow">Your next chapter starts here</span><h2>Some moments only happen once.</h2><p>Let’s turn yours into memories you can hold onto forever.</p><BookingButton>Book Your Date on WhatsApp <ArrowRight /></BookingButton></section><footer className="footer"><div className="container"><div className="footer-grid"><div><Brand /><p className="body-copy footer-description">Two beautiful chapters. One heartfelt story. Photographing love and life in Nepal.</p></div><div><h3 className="footer-title">Explore</h3><div className="footer-links">{nav.slice(1,5).map(item => <Link key={item.to} to={item.to}>{item.label}</Link>)}</div></div><div><h3 className="footer-title">Stay connected</h3><div className="footer-links"><a href="https://www.instagram.com/dreamweddingphotographynepal/" target="_blank" rel="noopener noreferrer">Dream Wedding <Instagram size={12} className="inline ml-1" /></a><a href="https://www.instagram.com/bumptobabiesnp/" target="_blank" rel="noopener noreferrer">Bump to Babies NP <Instagram size={12} className="inline ml-1" /></a><Link to="/packages">Our packages</Link></div></div><div><h3 className="footer-title">Let’s tell your story</h3><div className="footer-links"><a href={whatsappUrl()} target="_blank" rel="noopener noreferrer">{STUDIO.phone}</a><span>Nepal</span><Link to="/contact">Get in touch <ArrowRight size={12} className="inline" /></Link></div></div></div><div className="footer-bottom"><span>© {new Date().getFullYear()} {STUDIO.name}. All rights reserved.</span><span>Made with love, in Nepal.</span></div></div></footer><BookingButton variant="whatsapp" className="floating-whatsapp"><span className="sr-only">Chat on WhatsApp</span></BookingButton></>; }
 
@@ -23,7 +61,7 @@ export function Hero() {
   const [slide, setSlide] = useState(0);
   const slides = [images.wedding, images.newborn, images.portrait];
   useEffect(() => { if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return; const timer = window.setInterval(() => setSlide(s => (s + 1) % slides.length), 8000); return () => clearInterval(timer); }, [slides.length]);
-  return <section className="hero">{slides.map((src, i) => <img key={src} className={`hero-photo ${i === slide ? "visible" : ""}`} src={src} alt={i === 1 ? "A peacefully sleeping newborn baby" : "A Nepali couple celebrating their wedding"} fetchPriority={i === 0 ? "high" : "auto"} />)}<div className="hero-content reveal"><span className="eyebrow hero-eyebrow">For every beautiful chapter</span><h1>Bump to babies<em>& beyond.</em></h1><p className="hero-copy">From your first dance to your first cry,<br />we capture it all.</p><div className="hero-buttons"><Button asChild variant="editorial"><Link to="/weddings">Wedding Photography <ArrowRight /></Link></Button><Button asChild variant="hero"><Link to="/bump-to-babies">Maternity & Baby Shoots <ArrowRight /></Link></Button></div><a className="hero-whatsapp" href={whatsappUrl()} target="_blank" rel="noopener noreferrer"><MessageCircle size={15} /> Book on WhatsApp <ArrowRight size={13} /></a></div><div className="hero-bottom"><div className="hero-slide-controls">{slides.map((_,i) => <Button key={i} variant="hero" className={`hero-dot ${slide === i ? "selected" : ""}`} aria-label={`Show photograph ${i+1}`} onClick={() => setSlide(i)} />)}</div><span className="hero-caption">Love, captured in Nepal <ArrowDown size={14} /></span></div></section>;
+  return <section className="hero">{slides.map((src, i) => <Fragment key={src}><img className={`hero-photo-backdrop ${i === slide ? "visible" : ""}`} src={src} alt="" aria-hidden="true" /><img className={`hero-photo ${i === slide ? "visible" : ""}`} src={src} alt={i === 1 ? "A peacefully sleeping newborn baby" : "A Nepali couple celebrating their wedding"} fetchPriority={i === 0 ? "high" : "auto"} /></Fragment>)}<div className="hero-content reveal"><span className="eyebrow hero-eyebrow">For every beautiful chapter</span><h1>Bump to babies<em>& beyond.</em></h1><p className="hero-copy">From your first dance to your first cry,<br />we capture it all.</p><div className="hero-buttons"><Button asChild variant="editorial"><Link to="/weddings">Wedding Photography <ArrowRight /></Link></Button><Button asChild variant="hero"><Link to="/bump-to-babies">Maternity & Baby Shoots <ArrowRight /></Link></Button></div><a className="hero-whatsapp" href={whatsappUrl()} target="_blank" rel="noopener noreferrer"><MessageCircle size={15} /> Book on WhatsApp <ArrowRight size={13} /></a></div><div className="hero-bottom"><div className="hero-slide-controls">{slides.map((_,i) => <Button key={i} variant="hero" className={`hero-dot ${slide === i ? "selected" : ""}`} aria-label={`Show photograph ${i+1}`} onClick={() => setSlide(i)} />)}</div><span className="hero-caption">Love, captured in Nepal <ArrowDown size={14} /></span></div></section>;
 }
 export function ServiceCards() { return <div className="container service-grid"><Link to="/weddings" className="service-card"><img src={images.portrait} alt="Nepali bride and groom in traditional wedding attire" loading="lazy" /><div className="service-content"><span className="eyebrow">The beginning of forever</span><h3>Dream Wedding<br />Photography Nepal</h3><p>For the promises, the happy tears, and everything in between.</p><div className="service-explore">EXPLORE WEDDINGS <ArrowRight size={20} /></div></div></Link><Link to="/bump-to-babies" className="service-card"><img src={images.maternity} alt="Expectant mother in a soft ivory maternity dress" loading="lazy" /><div className="service-content"><span className="eyebrow">Little moments. Endless love.</span><h3>Bump to Babies NP</h3><p>From the beautiful wait to the tiniest toes.</p><div className="service-explore">EXPLORE MATERNITY & BABY <ArrowRight size={20} /></div></div></Link></div>; }
 
