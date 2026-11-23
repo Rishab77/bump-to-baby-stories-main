@@ -15,7 +15,45 @@ export function SiteHeader() {
   const [open, setOpen] = useState(false);
   const pathname = useRouterState({ select: (state) => state.location.pathname });
   useEffect(() => { setOpen(false); }, [pathname]);
-  return <header className="site-header"><div className="header-inner"><Brand /><nav className="desktop-nav" aria-label="Main navigation">{nav.map(item => <Link key={item.to} to={item.to} className={`nav-link ${pathname === item.to ? "active" : ""}`}>{item.label}</Link>)}</nav><BookingButton className="header-book">Book Now <ArrowRight /></BookingButton><Button className="menu-toggle" variant="ghost" size="icon" aria-label={open ? "Close navigation" : "Open navigation"} onClick={() => setOpen(!open)}>{open ? <X /> : <Menu />}</Button></div>{open && <nav className="mobile-menu" aria-label="Mobile navigation">{nav.map(item => <Link key={item.to} to={item.to} className="nav-link">{item.label}</Link>)}<BookingButton>Book Now</BookingButton></nav>}</header>;
+  useEffect(() => {
+    document.body.classList.toggle("nav-open", open);
+    return () => document.body.classList.remove("nav-open");
+  }, [open]);
+  return (
+    <header className="site-header">
+      <div className="header-inner">
+        <Brand />
+        <nav className="desktop-nav" aria-label="Main navigation">
+          {nav.map((item) => (
+            <Link key={item.to} to={item.to} className={`nav-link ${pathname === item.to ? "active" : ""}`}>
+              {item.label}
+            </Link>
+          ))}
+        </nav>
+        <BookingButton className="header-book">Book Now <ArrowRight /></BookingButton>
+        <Button
+          className="menu-toggle"
+          variant="ghost"
+          size="icon"
+          aria-expanded={open}
+          aria-label={open ? "Close navigation" : "Open navigation"}
+          onClick={() => setOpen(!open)}
+        >
+          {open ? <X /> : <Menu />}
+        </Button>
+      </div>
+      {open && (
+        <nav className="mobile-menu" aria-label="Mobile navigation">
+          {nav.map((item) => (
+            <Link key={item.to} to={item.to} className={`nav-link ${pathname === item.to ? "active" : ""}`}>
+              {item.label}
+            </Link>
+          ))}
+          <BookingButton>Book Now</BookingButton>
+        </nav>
+      )}
+    </header>
+  );
 }
 export function SiteFooter() { return <><section className="cta-band"><span className="eyebrow">Your next chapter starts here</span><h2>Some moments only happen once.</h2><p>Let’s turn yours into memories you can hold onto forever.</p><BookingButton>Book Your Date on WhatsApp <ArrowRight /></BookingButton></section><footer className="footer"><div className="container"><div className="footer-grid"><div><Brand /><p className="body-copy footer-description">Two beautiful chapters. One heartfelt story. Photographing love and life in Nepal.</p></div><div><h3 className="footer-title">Explore</h3><div className="footer-links">{nav.slice(1,5).map(item => <Link key={item.to} to={item.to}>{item.label}</Link>)}</div></div><div><h3 className="footer-title">Stay connected</h3><div className="footer-links"><a href="https://www.instagram.com/dreamweddingphotographynepal/" target="_blank" rel="noopener noreferrer">Dream Wedding <Instagram size={12} className="inline ml-1" /></a><a href="https://www.instagram.com/bumptobabiesnp/" target="_blank" rel="noopener noreferrer">Bump to Babies NP <Instagram size={12} className="inline ml-1" /></a><Link to="/packages">Our packages</Link></div></div><div><h3 className="footer-title">Let’s tell your story</h3><div className="footer-links"><a href={whatsappUrl()} target="_blank" rel="noopener noreferrer">{STUDIO.phone}</a><span>Nepal</span><Link to="/contact">Get in touch <ArrowRight size={12} className="inline" /></Link></div></div></div><div className="footer-bottom"><span>© {new Date().getFullYear()} {STUDIO.name}. All rights reserved.</span><span>Made with love, in Nepal.</span></div></div></footer><BookingButton variant="whatsapp" className="floating-whatsapp"><span className="sr-only">Chat on WhatsApp</span></BookingButton></>; }
 
