@@ -181,7 +181,9 @@ a { text-decoration: none; }
 .menu-toggle { display: none; }
 .mobile-menu { display: none; }
 .hero { position: relative; height: min(740px, 78svh); min-height: 560px; overflow: hidden; background: var(--deep); color: var(--hero-foreground); }
-.hero-photo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center; opacity: 0; transition: opacity 1.5s; }
+.hero-photo-backdrop { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: blur(20px); transform: scale(1.05); opacity: 0; transition: opacity 1.5s; }
+.hero-photo-backdrop.visible { opacity: .45; }
+.hero-photo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; object-position: right center; opacity: 0; transition: opacity 1.5s; }
 .hero-photo.visible { opacity: 1; }
 .hero::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, var(--hero-shade), transparent 85%), linear-gradient(0deg, var(--hero-shadow), transparent 50%); pointer-events: none; }
 .hero-content { position: relative; z-index: 1; max-width: 1280px; margin: auto; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; padding: 30px 6% 80px; }
@@ -308,7 +310,7 @@ body.nav-open .floating-whatsapp { display: none; }
   .mobile-menu .nav-link.active { border-bottom-color: var(--primary); }
   .mobile-menu a[data-slot], .mobile-menu .header-book, .mobile-menu > a { margin-top: 16px; width: 100%; justify-content: center; }
   .hero { min-height: 560px; height: min(80svh, 760px); }
-  .hero-photo { object-position: 62% center; }
+  .hero-photo { object-position: center; }
   .hero::after { background: linear-gradient(180deg, transparent 12%, var(--hero-shade) 72%), linear-gradient(90deg, var(--hero-shade), transparent 70%); }
   .hero-content { justify-content: flex-end; padding: 24px 5% 96px; }
   .hero-copy { max-width: 320px; }
